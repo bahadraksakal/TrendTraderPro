@@ -11,7 +11,7 @@ namespace Repositorys.CoinRepository
     {
         Task<CoinDTO> AddCoinAsync(string idStr, string coinName, string coinSymbol);
         Task<CoinDTO> GetCoinByNameAsync(string coinName);
-        Task<List<CoinDTO>> GetAllCoins();
+        Task<List<CoinDTO>> GetAllCoinsAsync();
         Task<List<CoinDTO>> SetCoinsAsync(List<Coin> newApiCoins);
     }
 }

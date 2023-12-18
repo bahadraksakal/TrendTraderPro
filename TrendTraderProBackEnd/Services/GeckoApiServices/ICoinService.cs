@@ -10,5 +10,6 @@ namespace Services.GeckoApiServices
     public interface ICoinService
     {
         Task<List<CoinDTO>> SetCoins();
+        Task<CoinDTO> GetCoinIdByNameAsync(string coinName);
     }
 }

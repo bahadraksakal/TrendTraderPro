@@ -27,11 +27,29 @@ namespace TrendTraderPro.Controllers
                 List<CoinDTO> addedCoins= await _coinService.SetCoins();
                 setCoinResponseModel.Data = addedCoins;
                 setCoinResponseModel.Message = "Coins added successfully.";
-                return Ok(setCoinResponseModel);
+                return StatusCode(StatusCodes.Status201Created, setCoinResponseModel);
             }
             catch (Exception ex)
             {
                 return BadRequest("CoinController-SetCoins Hata:" + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCoinIdByName(string coinName)
+        {
+            try
+            {
+                CoinDTO coin = await _coinService.GetCoinIdByNameAsync(coinName);
+                if(coin == null)
+                {
+                    return NotFound("Coin not found.");
+                }
+                return Ok(coin);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("CoinController-GetCoinIdByName Hata:" + ex.InnerException?.Message);
             }
         }
     }

@@ -36,7 +36,7 @@ namespace Repositorys.CoinRepository
             return _mapper.Map<CoinDTO>(coin);
         }
 
-        public async Task<List<CoinDTO>> GetAllCoins()
+        public async Task<List<CoinDTO>> GetAllCoinsAsync()
         {
             List<CoinDTO> coins = await _trendTraderProDbContext.Coins.AsNoTracking().Select(coin => _mapper.Map<CoinDTO>(coin)).ToListAsync();
             return coins;
@@ -58,5 +58,7 @@ namespace Repositorys.CoinRepository
             List<Coin> missingCoins = apiCoins.Where(apiCoin => !dbCoins.Any(dbCoin => dbCoin.Id == apiCoin.Id)).ToList();
             return missingCoins;
         }
+
+        
     }
 }

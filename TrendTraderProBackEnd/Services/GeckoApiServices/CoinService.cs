@@ -50,5 +50,11 @@ namespace Services.GeckoApiServices
                 return addedCoins;
             }
         }
+
+        public async Task<CoinDTO> GetCoinIdByNameAsync(string coinName)
+        {
+            CoinDTO coin = await _coinRepository.GetCoinByNameAsync(coinName);
+            return coin;
+        }
     }
 }
