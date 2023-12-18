@@ -1,0 +1,6 @@
+@TrendTraderPro_HostAddress = http://localhost:5042
+
+GET {{TrendTraderPro_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
