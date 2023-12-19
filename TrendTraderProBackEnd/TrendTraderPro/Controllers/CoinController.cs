@@ -7,6 +7,7 @@ using Services.GeckoApiServices;
 namespace TrendTraderPro.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [Authorize]
     [ApiController]
     public class CoinController : Controller
     {
@@ -17,7 +18,7 @@ namespace TrendTraderPro.Controllers
             _coinService = coinService;
         }
 
-       // [Authorize(Policy = "CustomAdminPolicy")]
+        [Authorize(Policy = "CustomAdminPolicy")]
         [HttpPost]
         public async Task<IActionResult> SetCoins()
         {
@@ -31,7 +32,7 @@ namespace TrendTraderPro.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest("CoinController-SetCoins Hata:" + ex.InnerException?.Message);
+                return BadRequest("CoinController-SetCoins Hata:"+ ex.InnerException?.Message);
             }
         }
 

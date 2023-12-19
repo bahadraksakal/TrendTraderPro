@@ -13,5 +13,19 @@ namespace DbContexts.DbContextTrendTraderPro
         public TrendTraderProDbContext(DbContextOptions<TrendTraderProDbContext> options) : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            User userAdmin = new User
+            {
+                Id = 1,
+                Name = "admin",
+                Password = "admin",
+                Email = "admin@gmail.com",
+                Tel = "05350449876",
+                Role = "Admin"
+            };
+            modelBuilder.Entity<User>().HasData(userAdmin);
+        }
     }
 }
