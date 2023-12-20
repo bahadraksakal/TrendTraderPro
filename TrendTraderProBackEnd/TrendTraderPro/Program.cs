@@ -1,7 +1,9 @@
+using DbContexts.DbContextHangFire;
 using DbContexts.DbContextTrendTraderPro;
 using Entities.Coins;
 using Entities.Users;
 using FluentValidation;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +18,7 @@ using Services.GeckoApiServices;
 using Swashbuckle.AspNetCore.Filters;
 using System.Security.Claims;
 using System.Text;
+using TrendTraderPro.Jobs;
 using Validators.FluentValidators.UserValidators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +36,13 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Debug().MinimumLevel.Warning()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day).MinimumLevel.Debug()
     .CreateLogger();
+
+builder.Services.AddHangfire(config =>
+{
+    config.UseSqlServerStorage(builder.Configuration["ConnectionStrings:ConnectionStringHangFire"]);
+    RecurringJob.AddOrUpdate<JobSetCoins>("job-run-set-coins",job => job.SetCoinsExecute(), "0 0 * * *"); //Her gün saat 00:00'da çalýþýr.
+});
+builder.Services.AddHangfireServer();
 
 builder.Services.AddSwaggerExamplesFromAssemblyOf<LoginExampleModel>();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<RegisterExampleModel>();
@@ -65,6 +75,10 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<TrendTraderProDbContext>(options => {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectionString"]);
+});
+builder.Services.AddDbContext<HangFireDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:ConnectionStringHangFire"]);
 });
 
 builder.Services.AddHttpClient();
@@ -123,16 +137,20 @@ using (var serviceScope = app.Services.CreateScope())
 {
     try
     {
-        var context = serviceScope.ServiceProvider.GetRequiredService<TrendTraderProDbContext>();
-        await context.Database.MigrateAsync();
+        var contextTrendTraderPro = serviceScope.ServiceProvider.GetRequiredService<TrendTraderProDbContext>();
+        var contextHangFire = serviceScope.ServiceProvider.GetRequiredService<HangFireDbContext>(); 
+        await contextTrendTraderPro.Database.MigrateAsync();
+        await contextHangFire.Database.MigrateAsync();
     }
     catch (Exception ex)
     {
-        Log.Error("Veri tabaný güncellenemedi veya baþarýyla oluþturulamadý. Mesaj: " + ex.Message);
+        Log.Error("Veri tabanlarý güncellenemedi veya baþarýyla oluþturulamadý. Mesaj: " + ex.Message);
     }
 }
 
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard("/hangfire");
 
 app.UseAuthentication();
 app.UseAuthorization();

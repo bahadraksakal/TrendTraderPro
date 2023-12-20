@@ -53,5 +53,19 @@ namespace TrendTraderPro.Controllers
                 return BadRequest("CoinController-GetCoinIdByName Hata:" + ex.InnerException?.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCoinAdviseById(int coinId)
+        {
+            try
+            {
+                
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("CoinController-GetCoinAdviseById Hata:" + ex.InnerException?.Message);
+            }
+        }
     }
 }
