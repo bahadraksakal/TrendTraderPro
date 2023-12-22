@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DbContexts.DbContextTrendTraderPro;
 using Entities.CoinPriceHistories;
-using Entities.CoinPriceHistorys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,11 +19,13 @@ namespace Repositorys.CoinPriceHistoryRepository
             _logger = logger;
         }
 
-        public async Task SetCoinPriceHistorys(List<CoinPriceHistory> coinPriceHistories)
+        public async Task SetCoinPriceHistorys(List<CoinPriceHistoryDTO> coinPriceHistoriesDTO)
         {
-            //kontrol işlemi ekle son tarihten itibaren eklesin gerçi bu servie içinde olcak :)
-            _trendTraderProDbContext.CoinPriceHistories.AddRange(coinPriceHistories);
+            List<CoinPriceHistory> coinPriceHistories = _mapper.Map<List<CoinPriceHistory>>(coinPriceHistoriesDTO);
+
+            await _trendTraderProDbContext.CoinPriceHistories.AddRangeAsync(coinPriceHistories);
             await _trendTraderProDbContext.SaveChangesAsync();
+
             _logger.LogInformation($"CoinPriceHistorys is Successed. CoinId - {coinPriceHistories[0]?.CoinId}: [Added CoinPriceHistorys Count:{coinPriceHistories?.Count}]");
         }
 
@@ -62,6 +63,18 @@ namespace Repositorys.CoinPriceHistoryRepository
             List<CoinPriceHistory> coinPriceHistories = await query.ToListAsync();
             return _mapper.Map<List<CoinPriceHistoryDTO>>(coinPriceHistories);
         }
+
+        public async Task<CoinPriceHistoryDTO> GetCoinPricesHistoryLastData(string coinIdStr)
+        {
+            CoinPriceHistory? coinPriceLastData = await _trendTraderProDbContext.CoinPriceHistories
+                .AsNoTracking()
+                .Where(coinPriceHistory => coinPriceHistory.CoinId == coinIdStr)
+                .OrderByDescending(coinPriceHistory => coinPriceHistory.Date)
+                .FirstOrDefaultAsync();
+
+            return _mapper.Map<CoinPriceHistoryDTO>(coinPriceLastData);
+        }
+
 
 
     }

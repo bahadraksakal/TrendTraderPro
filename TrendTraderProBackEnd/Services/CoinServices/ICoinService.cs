@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.GeckoApiServices
+namespace Services.CoinServices
 {
     public interface ICoinService
     {

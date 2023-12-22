@@ -1,5 +1,4 @@
-﻿
-using Services.GeckoApiServices;
+﻿using Services.CoinServices;
 
 namespace TrendTraderPro.Jobs
 {

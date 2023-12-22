@@ -1,4 +1,4 @@
-﻿using Entities.CoinPriceHistorys;
+﻿using Entities.CoinPriceHistories;
 using Entities.Coins;
 using Entities.Users;
 using Microsoft.EntityFrameworkCore;

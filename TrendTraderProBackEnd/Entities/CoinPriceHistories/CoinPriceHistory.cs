@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities.CoinPriceHistorys
+namespace Entities.CoinPriceHistories
 {
     public class CoinPriceHistory
     {
@@ -10,7 +9,7 @@ namespace Entities.CoinPriceHistorys
         public string? CoinId { get; set; }
 
         [Column(TypeName = "decimal(18, 10)")]
-        public float? Price { get; set; }
+        public decimal? Price { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal? MarketCap { get; set; }

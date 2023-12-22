@@ -5,7 +5,7 @@
 namespace DbContexts.MigrationsHangFire
 {
     /// <inheritdoc />
-    public partial class emptyfirst : Migration
+    public partial class Emptyfirst : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

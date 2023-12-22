@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.GeckoApiServices.CoinPriceHistoryServices
+namespace Services.CoinPriceHistoryServices
 {
     public interface ICoinPriceHistoryService
     {
+        Task SetCoinPriceHistories(string coinIdStr);
     }
 }

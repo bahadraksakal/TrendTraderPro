@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.CoinModels;
-using Services.GeckoApiServices;
+using Services.CoinPriceHistoryServices;
+using Services.CoinServices;
 
 namespace TrendTraderPro.Controllers
 {
@@ -12,10 +13,26 @@ namespace TrendTraderPro.Controllers
     public class CoinController : Controller
     {
         private readonly ICoinService _coinService;
+        private readonly ICoinPriceHistoryService _coinPriceHistoryService;
         
-        public CoinController(ICoinService coinService)
+        public CoinController(ICoinService coinService, ICoinPriceHistoryService coinPriceHistoryService)
         {
             _coinService = coinService;
+            _coinPriceHistoryService = coinPriceHistoryService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetCoinPriceHistory(CoinIdModel coinIdModel)
+        {
+            try
+            {
+                await _coinPriceHistoryService.SetCoinPriceHistories(coinIdModel.CoinId ?? "");
+                return Ok("SetCoinPriceHistories is Successed");
+
+            }catch(Exception ex)
+            {
+                return BadRequest("CoinController-SetCoinPriceHistory Hata:" + ex.InnerException?.Message);
+            }
         }
 
         [Authorize(Policy = "CustomAdminPolicy")]

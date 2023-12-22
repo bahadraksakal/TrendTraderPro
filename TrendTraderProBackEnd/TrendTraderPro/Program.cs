@@ -1,5 +1,6 @@
 using DbContexts.DbContextHangFire;
 using DbContexts.DbContextTrendTraderPro;
+using Entities.CoinPriceHistories;
 using Entities.Coins;
 using Entities.Users;
 using FluentValidation;
@@ -9,12 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Models.SwaggerExampleModels;
+using Repositorys.CoinPriceHistoryRepository;
 using Repositorys.CoinRepository;
 using Repositorys.UserRepositorys;
 using Serilog;
 using Serilog.Events;
 using Services.AuthServices;
-using Services.GeckoApiServices;
+using Services.CoinPriceHistoryServices;
+using Services.CoinServices;
 using Swashbuckle.AspNetCore.Filters;
 using System.Security.Claims;
 using System.Text;
@@ -85,12 +88,15 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICoinRepository, CoinRepository>();
+builder.Services.AddScoped<ICoinPriceHistoriesRepository, CoinPriceHistoriesRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICoinService, CoinService>();
+builder.Services.AddScoped<ICoinPriceHistoryService, CoinPriceHistoryService>();
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(CoinProfile));
+builder.Services.AddAutoMapper(typeof(CoinPriceHistoryProfile));
 
 //builder.Services.AddFluentValidationAutoValidation();
 //builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterValidator>();

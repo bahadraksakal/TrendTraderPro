@@ -12,7 +12,7 @@ namespace DbContexts.MigrationsHangFire
 {
     [DbContext(typeof(HangFireDbContext))]
     [Migration("20231220091508_empty-first")]
-    partial class emptyfirst
+    partial class Emptyfirst
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
