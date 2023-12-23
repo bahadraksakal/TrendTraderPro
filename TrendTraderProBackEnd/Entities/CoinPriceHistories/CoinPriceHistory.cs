@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Entities.Coins;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.CoinPriceHistories
 {
@@ -18,5 +19,7 @@ namespace Entities.CoinPriceHistories
         public decimal? TotalVolume { get; set; }
 
         public DateTime Date { get; set; }
+
+        public virtual Coin? Coin { get; set; } 
     }
 }

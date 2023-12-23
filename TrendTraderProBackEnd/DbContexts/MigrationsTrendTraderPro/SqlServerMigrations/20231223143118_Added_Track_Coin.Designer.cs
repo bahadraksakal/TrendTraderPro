@@ -4,6 +4,7 @@ using DbContexts.DbContextTrendTraderPro;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DbContexts.MigrationsTrendTraderPro.SqlServerMigrations
 {
     [DbContext(typeof(TrendTraderProDbContext))]
-    partial class TrendTraderProDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231223143118_Added_Track_Coin")]
+    partial class Added_Track_Coin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
