@@ -29,10 +29,19 @@ namespace Repositorys.CoinPriceHistoryRepository
             _logger.LogInformation($"CoinPriceHistorys is Successed. CoinId - {coinPriceHistories[0]?.CoinId}: [Added CoinPriceHistorys Count:{coinPriceHistories?.Count}]");
         }
 
-        public async Task<List<CoinPriceHistoryDTO>> GetCoinPricesHistories(string coinIdStr, bool isIncludePrice, bool isIncludeMarketCap, bool isIncludeTotalVolume, DateTime? minDate = null, DateTime? maxDate = null)
+        public async Task<List<CoinPriceHistoryDTO>> GetCoinPricesHistories(string coinIdStr, bool? isIncludePrice = false, bool? isIncludeMarketCap =false, bool? isIncludeTotalVolume =false, DateTime? minDate = null, DateTime? maxDate = null)
         {
             IQueryable<CoinPriceHistory> query = _trendTraderProDbContext.CoinPriceHistories
                 .AsNoTracking()
+                .Select(c => new CoinPriceHistory
+                {
+                    Id = c.Id,
+                    CoinId = c.CoinId,
+                    Price = isIncludePrice.GetValueOrDefault() ? c.Price : null,
+                    MarketCap = isIncludeMarketCap.GetValueOrDefault() ? c.MarketCap : null,
+                    TotalVolume = isIncludeTotalVolume.GetValueOrDefault() ? c.TotalVolume : null,
+                    Date = c.Date
+                })
                 .Where(coinPriceHistory => coinPriceHistory.CoinId == coinIdStr);
 
             if (minDate.HasValue)
@@ -45,23 +54,10 @@ namespace Repositorys.CoinPriceHistoryRepository
                 query = query.Where(coinPriceHistory => coinPriceHistory.Date <= maxDate.Value);
             }
 
-            if (isIncludePrice)
-            {
-                query = query.Include(c => c.Price);
-            }
-
-            if (isIncludeMarketCap)
-            {
-                query = query.Include(c => c.MarketCap);
-            }
-
-            if (isIncludeTotalVolume)
-            {
-                query = query.Include(c => c.TotalVolume);
-            }
-
             List<CoinPriceHistory> coinPriceHistories = await query.ToListAsync();
+            
             return _mapper.Map<List<CoinPriceHistoryDTO>>(coinPriceHistories);
+
         }
 
         public async Task<CoinPriceHistoryDTO> GetCoinPricesHistoryLastData(string coinIdStr)

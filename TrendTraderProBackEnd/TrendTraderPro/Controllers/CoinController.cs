@@ -1,6 +1,8 @@
-﻿using Entities.Coins;
+﻿using Entities.CoinPriceHistories;
+using Entities.Coins;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Models.CoinModels;
 using Services.CoinPriceHistoryServices;
 using Services.CoinServices;
@@ -72,17 +74,35 @@ namespace TrendTraderPro.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCoinAdviseById(int coinId)
+        public async Task<IActionResult> GetCoinPriceHistoriesDeatils(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate = null, DateTime? maxDate = null)
         {
             try
             {
-                
-                return Ok();
+                List<CoinPriceHistoryDTO> coinPriceHistoriesDTO = await _coinPriceHistoryService.GetCoinPriceHistories(coinIdStr, isIncludePrice, isIncludeMarketCap, isIncludeTotalVolume, minDate, maxDate);
+                if (coinPriceHistoriesDTO.IsNullOrEmpty())
+                {
+                    return NotFound("CoinPriceHistory not found.");
+                }
+                return Ok(coinPriceHistoriesDTO);
             }
             catch (Exception ex)
             {
-                return BadRequest("CoinController-GetCoinAdviseById Hata:" + ex.InnerException?.Message);
+                return BadRequest("CoinController-GetCoinPriceHistoriesDeatils Hata:" + ex.InnerException?.Message);
             }
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetCoinAdviseById(int coinId)
+        //{
+        //    try
+        //    {
+                
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest("CoinController-GetCoinAdviseById Hata:" + ex.InnerException?.Message);
+        //    }
+        //}
     }
 }

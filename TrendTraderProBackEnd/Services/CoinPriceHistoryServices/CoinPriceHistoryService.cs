@@ -38,7 +38,7 @@ namespace Services.CoinPriceHistoryServices
             {
                 DateTimeOffset coinPriceLastDate = new DateTimeOffset(coinPriceLastData.Date.GetValueOrDefault());
                 string coinPriceLastDateTimestamp = coinPriceLastDate.ToUnixTimeSeconds().ToString();
-                string currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+                string currentTimestamp = DateTimeOffset.UtcNow.AddMilliseconds(1).ToUnixTimeSeconds().ToString();
                 apiUrl.Append($"/market_chart/range?vs_currency=usd&from={coinPriceLastDateTimestamp}&to={currentTimestamp}&precision=9");
             }
             try
@@ -90,6 +90,12 @@ namespace Services.CoinPriceHistoryServices
             return coinPriceHistoriesDTO;
         }
 
+
+        public async Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistories(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate)
+        {
+            return await _coinPriceHistoryRepository.GetCoinPricesHistories(coinIdStr,isIncludePrice:isIncludePrice,isIncludeMarketCap:isIncludeMarketCap,isIncludeTotalVolume:isIncludeTotalVolume,minDate:minDate,maxDate:maxDate);
+        }
         //get için esnek kullanım alanını test et.
     }
+
 }
