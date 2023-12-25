@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using Entities.CoinPriceHistories;
+using Entities.TrackCoins;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Repositorys.CoinPriceHistoryRepository;
-using System.Net.Http.Json;
+using Repositorys.TrackCoinRepository;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Services.CoinPriceHistoryServices
 {
@@ -15,13 +16,15 @@ namespace Services.CoinPriceHistoryServices
         private readonly ILogger<ICoinPriceHistoryService> _logger;
         private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
+        private readonly ITrackCoinRepository _trackCoinRepository;
 
-        public CoinPriceHistoryService(ICoinPriceHistoriesRepository coinPriceHistoryRepository, ILogger<ICoinPriceHistoryService> logger, IMapper mapper, HttpClient httpClient)
+        public CoinPriceHistoryService(ICoinPriceHistoriesRepository coinPriceHistoryRepository, ILogger<ICoinPriceHistoryService> logger, IMapper mapper, HttpClient httpClient, ITrackCoinRepository trackCoinRepository)
         {
             _coinPriceHistoryRepository = coinPriceHistoryRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
+            _trackCoinRepository = trackCoinRepository;
         }
 
         public async Task SetCoinPriceHistories(string coinIdStr)
@@ -38,7 +41,7 @@ namespace Services.CoinPriceHistoryServices
             {
                 DateTimeOffset coinPriceLastDate = new DateTimeOffset(coinPriceLastData.Date.GetValueOrDefault());
                 string coinPriceLastDateTimestamp = coinPriceLastDate.ToUnixTimeSeconds().ToString();
-                string currentTimestamp = DateTimeOffset.UtcNow.AddMilliseconds(1).ToUnixTimeSeconds().ToString();
+                string currentTimestamp = DateTimeOffset.Now.AddSeconds(1).ToUnixTimeSeconds().ToString();
                 apiUrl.Append($"/market_chart/range?vs_currency=usd&from={coinPriceLastDateTimestamp}&to={currentTimestamp}&precision=9");
             }
             try
@@ -51,7 +54,7 @@ namespace Services.CoinPriceHistoryServices
                     jsonContent = jsonContent.Replace("null", "-1");
 
                     coinPriceHistoriesDTO = CoinPriceHistoryGeckoApiDTODeserialize(jsonContent,coinIdStr) ;
-                    if (coinPriceHistoriesDTO == null)
+                    if (coinPriceHistoriesDTO.IsNullOrEmpty())
                     {
                         _logger.LogWarning($"CoinPriceHistoryService: [CoinPriceHistorys could not be get with CoinGecko - CoinStatusCode:{response.StatusCode} - Your coinId:{coinIdStr}]");
                         return;
@@ -93,9 +96,30 @@ namespace Services.CoinPriceHistoryServices
 
         public async Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistories(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate)
         {
-            return await _coinPriceHistoryRepository.GetCoinPricesHistories(coinIdStr,isIncludePrice:isIncludePrice,isIncludeMarketCap:isIncludeMarketCap,isIncludeTotalVolume:isIncludeTotalVolume,minDate:minDate,maxDate:maxDate);
+            TrackCoinDTO trackCoinDTO =await _trackCoinRepository.GetTrackCoinAsync(coinIdStr);
+            List<CoinPriceHistoryDTO> coinPriceHistoriesDTOs;
+            if (trackCoinDTO?.TrackStatus == TrackStatus.Tracked)
+            {
+                await _trackCoinRepository.UpdateTrackCoin(coinIdStr, DateTime.Now, TrackStatus.Tracked);
+                coinPriceHistoriesDTOs = await _coinPriceHistoryRepository.GetCoinPricesHistories(coinIdStr, isIncludePrice: isIncludePrice, isIncludeMarketCap: isIncludeMarketCap, isIncludeTotalVolume: isIncludeTotalVolume, minDate: minDate, maxDate: maxDate);
+                return coinPriceHistoriesDTOs;
+            }
+
+            await SetCoinPriceHistories(coinIdStr);
+
+            if (trackCoinDTO?.TrackStatus == TrackStatus.UnTracked)
+            {
+                await _trackCoinRepository.UpdateTrackCoin(coinIdStr, DateTime.Now, TrackStatus.Tracked);
+            }
+            if (trackCoinDTO is null)
+            {
+                await _trackCoinRepository.AddTrackCoinAsync(coinIdStr, DateTime.Now, TrackStatus.Tracked);
+            }
+            
+            coinPriceHistoriesDTOs = await _coinPriceHistoryRepository.GetCoinPricesHistories(coinIdStr, isIncludePrice: isIncludePrice, isIncludeMarketCap: isIncludeMarketCap, isIncludeTotalVolume: isIncludeTotalVolume, minDate: minDate, maxDate: maxDate);
+            return coinPriceHistoriesDTOs;
+
         }
-        //get için esnek kullanım alanını test et.
     }
 
 }

@@ -2,6 +2,7 @@ using DbContexts.DbContextHangFire;
 using DbContexts.DbContextTrendTraderPro;
 using Entities.CoinPriceHistories;
 using Entities.Coins;
+using Entities.TrackCoins;
 using Entities.Users;
 using FluentValidation;
 using Hangfire;
@@ -12,12 +13,14 @@ using Microsoft.OpenApi.Models;
 using Models.SwaggerExampleModels;
 using Repositorys.CoinPriceHistoryRepository;
 using Repositorys.CoinRepository;
+using Repositorys.TrackCoinRepository;
 using Repositorys.UserRepositorys;
 using Serilog;
 using Serilog.Events;
 using Services.AuthServices;
 using Services.CoinPriceHistoryServices;
 using Services.CoinServices;
+using Services.TrackCoinServices;
 using Swashbuckle.AspNetCore.Filters;
 using System.Security.Claims;
 using System.Text;
@@ -89,14 +92,17 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICoinRepository, CoinRepository>();
 builder.Services.AddScoped<ICoinPriceHistoriesRepository, CoinPriceHistoriesRepository>();
+builder.Services.AddScoped<ITrackCoinRepository, TrackCoinRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICoinService, CoinService>();
 builder.Services.AddScoped<ICoinPriceHistoryService, CoinPriceHistoryService>();
+builder.Services.AddScoped<ITrackCoinService,TrackCoinService>();
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(CoinProfile));
 builder.Services.AddAutoMapper(typeof(CoinPriceHistoryProfile));
+builder.Services.AddAutoMapper(typeof(TrackCoinProfile));
 
 //builder.Services.AddFluentValidationAutoValidation();
 //builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterValidator>();
@@ -147,10 +153,11 @@ using (var serviceScope = app.Services.CreateScope())
         var contextHangFire = serviceScope.ServiceProvider.GetRequiredService<HangFireDbContext>(); 
         await contextTrendTraderPro.Database.MigrateAsync();
         await contextHangFire.Database.MigrateAsync();
+        Log.Information("Database migrations successfully implemented");
     }
     catch (Exception ex)
     {
-        Log.Error("Veri tabanlarý güncellenemedi veya baþarýyla oluþturulamadý. Mesaj: " + ex.Message);
+        Log.Error($"Database could not be create or migrations could not be implemented: {ex.Message} - InnerEx: {ex.InnerException?.Message}");
     }
 }
 

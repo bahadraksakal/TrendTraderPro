@@ -1,5 +1,6 @@
 ﻿using Entities.CoinPriceHistories;
 using Entities.Coins;
+using Entities.TrackCoins;
 using Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace DbContexts.DbContextTrendTraderPro
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Coin> Coins { get; set; }
         public virtual DbSet<CoinPriceHistory> CoinPriceHistories { get; set; } 
+        public virtual DbSet<TrackCoin> TrackCoins { get; set; }
 
         public TrendTraderProDbContext(DbContextOptions<TrendTraderProDbContext> options) : base(options)
         {
