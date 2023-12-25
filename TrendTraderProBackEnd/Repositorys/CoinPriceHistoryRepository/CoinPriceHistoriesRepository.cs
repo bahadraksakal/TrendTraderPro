@@ -42,7 +42,8 @@ namespace Repositorys.CoinPriceHistoryRepository
                     TotalVolume = isIncludeTotalVolume.GetValueOrDefault() ? c.TotalVolume : null,
                     Date = c.Date
                 })
-                .Where(coinPriceHistory => coinPriceHistory.CoinId == coinIdStr);
+                .Where(coinPriceHistory => coinPriceHistory.CoinId == coinIdStr)
+                .OrderByDescending(coinPriceHistory => coinPriceHistory.Date);
 
             if (minDate.HasValue)
             {

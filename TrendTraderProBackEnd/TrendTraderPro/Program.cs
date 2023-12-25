@@ -36,19 +36,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSerilog();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    //.Enrich.FromLogContext()
-    .WriteTo.Console().MinimumLevel.Warning()
-    .WriteTo.Debug().MinimumLevel.Warning()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Debug()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day).MinimumLevel.Debug()
     .CreateLogger();
 
 builder.Services.AddHangfire(config =>
 {
+    //config.UseSerilogLogProvider();
     config.UseSqlServerStorage(builder.Configuration["ConnectionStrings:ConnectionStringHangFire"]);
     RecurringJob.AddOrUpdate<JobSetCoins>("job-run-set-coins",job => job.SetCoinsExecute(), "0 0 * * *"); //Her gün saat 00:00'da çalýþýr.
     RecurringJob.AddOrUpdate<JobTrackCoinCheckAndUnTrack>("job-run-track-coin-check-and-untrack", job=> job.TrackCoinCheckAndUnTrackExecute(2629800), "0 0 * * *");
-    RecurringJob.AddOrUpdate<JobSetCoinsHistoriesOnlyTrack>("job-run-set-coins-histories-only-track", job => job.SetCoinsHistoriesOnlyTrackExecute(), "* * * * *");
+    RecurringJob.AddOrUpdate<JobSetCoinsHistoriesOnlyTrack>("job-run-set-coins-histories-only-track", job => job.SetCoinsHistoriesOnlyTrackExecute(), "*/5 * * * *");
 });
 builder.Services.AddHangfireServer();
 

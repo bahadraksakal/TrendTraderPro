@@ -40,7 +40,7 @@ namespace Services.CoinPriceHistoryServices
             else
             {
                 DateTimeOffset coinPriceLastDate = new DateTimeOffset(coinPriceLastData.Date.GetValueOrDefault());
-                string coinPriceLastDateTimestamp = coinPriceLastDate.ToUnixTimeSeconds().ToString();
+                string coinPriceLastDateTimestamp = coinPriceLastDate.AddSeconds(1).ToUniversalTime().ToUnixTimeSeconds().ToString();
                 string currentTimestamp = DateTimeOffset.Now.AddSeconds(1).ToUnixTimeSeconds().ToString();
                 apiUrl.Append($"/market_chart/range?vs_currency=usd&from={coinPriceLastDateTimestamp}&to={currentTimestamp}&precision=9");
             }
@@ -86,7 +86,7 @@ namespace Services.CoinPriceHistoryServices
                     Price = coinPriceHistoryGeckoApiDTO?.prices?.ElementAt(i)[1],
                     MarketCap = coinPriceHistoryGeckoApiDTO?.market_caps?.ElementAt(i)[1],
                     TotalVolume = coinPriceHistoryGeckoApiDTO?.total_volumes?.ElementAt(i)[1],
-                    Date = DateTimeOffset.FromUnixTimeMilliseconds((long)(coinPriceHistoryGeckoApiDTO?.prices?.ElementAt(i)[0]!)).DateTime,                    
+                    Date = DateTimeOffset.FromUnixTimeMilliseconds((long)(coinPriceHistoryGeckoApiDTO?.prices?.ElementAt(i)[0]!)).LocalDateTime,                    
                 });
             }
 
