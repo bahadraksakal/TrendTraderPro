@@ -28,17 +28,17 @@ namespace Services.TrackCoinServices
             }
             else
             {
-                trackCoinDTO = await _trackCoinRepository.UpdateTrackCoin(coinIdStr, DateTime.Now, TrackStatus.Tracked);
+                trackCoinDTO = await _trackCoinRepository.UpdateTrackCoin(coinIdStr, DateTime.Now, TrackStatus. Tracked);
             }
             
             return trackCoinDTO;
         }
 
-        public async Task<TrackCoinDTO> SetUnTrackCoinToLastRequestAsync(string coinIdStr)
+        public async Task<TrackCoinDTO> SetUnTrackCoinToLastRequestAsync(string coinIdStr, long second)
         {
             TrackCoinDTO trackCoinDTO = await _trackCoinRepository.GetTrackCoinAsync(coinIdStr);
             
-            if(trackCoinDTO.LastRequestDate?.AddSeconds(30) < DateTime.Now)
+            if(trackCoinDTO.LastRequestDate?.AddSeconds(second) < DateTime.Now)
             {
                 trackCoinDTO = await _trackCoinRepository.UpdateTrackCoin(coinIdStr, trackCoinDTO.LastRequestDate.Value, TrackStatus.UnTracked);
                 _logger.LogInformation($"TrackCoin was uptaded succesful: [CoinId:{trackCoinDTO.CoinId} - TrackStatus:{trackCoinDTO.TrackStatus} - LastRequestDate:{trackCoinDTO.LastRequestDate}]");
@@ -49,6 +49,12 @@ namespace Services.TrackCoinServices
         public async Task<List<TrackCoinDTO>> GetAllTrackCoinsAsync()
         {
             List<TrackCoinDTO>? trackCoinDTOs = await _trackCoinRepository.GetAllTrackCoinsAsync();
+            return trackCoinDTOs;
+        }
+
+        public async Task<List<TrackCoinDTO>> GetAllTrackCoinsOnlyTrackedAsync()
+        {
+            List<TrackCoinDTO>? trackCoinDTOs = await _trackCoinRepository.GetAllTrackCoinsOnlyTrackedAsync();
             return trackCoinDTOs;
         }
 

@@ -32,11 +32,11 @@ namespace TrendTraderPro.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> SetUnTrackCoinToLastRequest(string coinIdStr)
+        public async Task<IActionResult> SetUnTrackCoinToLastRequest(string coinIdStr, long second)
         {
             try
             {
-                TrackCoinDTO trackCoinDTO = await _trackCoinService.SetUnTrackCoinToLastRequestAsync(coinIdStr);
+                TrackCoinDTO trackCoinDTO = await _trackCoinService.SetUnTrackCoinToLastRequestAsync(coinIdStr, second);
                 return Ok(trackCoinDTO);
             }
             catch (Exception ex)
@@ -56,6 +56,20 @@ namespace TrendTraderPro.Controllers
             catch (Exception ex)
             {
                 return BadRequest("TrackCoinController-GetTrackCoins Hata:" + ex.InnerException?.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllTrackCoinsOnlyTracked()
+        {
+            try
+            {
+                List<TrackCoinDTO> trackCoinDTOs = await _trackCoinService.GetAllTrackCoinsOnlyTrackedAsync();
+                return Ok(trackCoinDTOs);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("TrackCoinController-GetAllTrackCoinsOnlyTracked Hata:" + ex.InnerException?.Message);
             }
         }
 

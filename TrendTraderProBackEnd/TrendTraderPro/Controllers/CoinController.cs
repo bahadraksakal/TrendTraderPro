@@ -28,7 +28,7 @@ namespace TrendTraderPro.Controllers
         {
             try
             {
-                await _coinPriceHistoryService.SetCoinPriceHistories(coinIdModel.CoinId ?? "");
+                await _coinPriceHistoryService.SetCoinPriceHistoriesAsync(coinIdModel.CoinId ?? "");
                 return Ok("SetCoinPriceHistories is Successed");
 
             }catch(Exception ex)
@@ -78,7 +78,7 @@ namespace TrendTraderPro.Controllers
         {
             try
             {
-                List<CoinPriceHistoryDTO> coinPriceHistoriesDTO = await _coinPriceHistoryService.GetCoinPriceHistories(coinIdStr, isIncludePrice, isIncludeMarketCap, isIncludeTotalVolume, minDate, maxDate);
+                List<CoinPriceHistoryDTO> coinPriceHistoriesDTO = await _coinPriceHistoryService.GetCoinPriceHistoriesAsync(coinIdStr, isIncludePrice, isIncludeMarketCap, isIncludeTotalVolume, minDate, maxDate);
                 if (coinPriceHistoriesDTO.IsNullOrEmpty())
                 {
                     return NotFound("CoinPriceHistory not found.");

@@ -45,6 +45,12 @@ namespace Repositorys.TrackCoinRepository
             return _mapper.Map<List<TrackCoinDTO>>(trackCoins);
         }
 
+        public async Task<List<TrackCoinDTO>> GetAllTrackCoinsOnlyTrackedAsync()
+        {
+            List<TrackCoin>? trackCoins = await _trendTraderProDbContext.TrackCoins.AsNoTracking().Where(trackCoins => trackCoins.TrackStatus == TrackStatus.Tracked).ToListAsync();
+            return _mapper.Map<List<TrackCoinDTO>>(trackCoins);
+        }
+
         public async Task<TrackCoinDTO> UpdateTrackCoin(string coinIdStr, DateTime newLastRequestDate, TrackStatus? trackStatus = TrackStatus.Tracked)
         {
             TrackCoin? trackCoin = await _trendTraderProDbContext.TrackCoins.FirstOrDefaultAsync(trackCoin => trackCoin.CoinId == coinIdStr);

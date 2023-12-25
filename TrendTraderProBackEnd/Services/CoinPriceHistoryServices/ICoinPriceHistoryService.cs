@@ -9,7 +9,7 @@ namespace Services.CoinPriceHistoryServices
 {
     public interface ICoinPriceHistoryService
     {
-        Task SetCoinPriceHistories(string coinIdStr);
-        Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistories(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate);
+        Task SetCoinPriceHistoriesAsync(string coinIdStr);
+        Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistoriesAsync(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate);
     }
 }

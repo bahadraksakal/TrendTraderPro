@@ -27,7 +27,7 @@ namespace Services.CoinPriceHistoryServices
             _trackCoinRepository = trackCoinRepository;
         }
 
-        public async Task SetCoinPriceHistories(string coinIdStr)
+        public async Task SetCoinPriceHistoriesAsync(string coinIdStr)
         {
             CoinPriceHistoryDTO coinPriceLastData = await _coinPriceHistoryRepository.GetCoinPricesHistoryLastData(coinIdStr);
             List<CoinPriceHistoryDTO> coinPriceHistoriesDTO;
@@ -94,7 +94,7 @@ namespace Services.CoinPriceHistoryServices
         }
 
 
-        public async Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistories(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate)
+        public async Task<List<CoinPriceHistoryDTO>> GetCoinPriceHistoriesAsync(string coinIdStr, bool? isIncludePrice, bool? isIncludeMarketCap, bool? isIncludeTotalVolume, DateTime? minDate, DateTime? maxDate)
         {
             TrackCoinDTO trackCoinDTO =await _trackCoinRepository.GetTrackCoinAsync(coinIdStr);
             List<CoinPriceHistoryDTO> coinPriceHistoriesDTOs;
@@ -105,7 +105,7 @@ namespace Services.CoinPriceHistoryServices
                 return coinPriceHistoriesDTOs;
             }
 
-            await SetCoinPriceHistories(coinIdStr);
+            await SetCoinPriceHistoriesAsync(coinIdStr);
 
             if (trackCoinDTO?.TrackStatus == TrackStatus.UnTracked)
             {

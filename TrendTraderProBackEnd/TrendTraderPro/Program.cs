@@ -47,6 +47,8 @@ builder.Services.AddHangfire(config =>
 {
     config.UseSqlServerStorage(builder.Configuration["ConnectionStrings:ConnectionStringHangFire"]);
     RecurringJob.AddOrUpdate<JobSetCoins>("job-run-set-coins",job => job.SetCoinsExecute(), "0 0 * * *"); //Her gün saat 00:00'da çalýþýr.
+    RecurringJob.AddOrUpdate<JobTrackCoinCheckAndUnTrack>("job-run-track-coin-check-and-untrack", job=> job.TrackCoinCheckAndUnTrackExecute(2629800), "0 0 * * *");
+    RecurringJob.AddOrUpdate<JobSetCoinsHistoriesOnlyTrack>("job-run-set-coins-histories-only-track", job => job.SetCoinsHistoriesOnlyTrackExecute(), "* * * * *");
 });
 builder.Services.AddHangfireServer();
 
